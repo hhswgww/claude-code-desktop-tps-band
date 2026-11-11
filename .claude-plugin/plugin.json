@@ -1,8 +1,29 @@
 {
   "name": "tps-band",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Output tokens per second for each model response, in the band above the prompt",
   "author": { "name": "hhswgww", "url": "https://github.com/hhswgww" },
   "license": "MIT",
-  "types": "./types/index.d.ts"
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "speedMode": {
+      "title": "Speed mode",
+      "type": "string",
+      "description": "Which speed to show: generation (first token to stop), end-to-end (request to stop), or both",
+      "default": "generation",
+      "options": ["generation", "end-to-end", "both"]
+    },
+    "retainSeconds": {
+      "title": "Keep the last reading",
+      "type": "number",
+      "description": "Seconds the last reading stays after a turn ends; 0 keeps it until the next turn",
+      "default": 60
+    },
+    "showSparkline": {
+      "title": "Show a sparkline",
+      "type": "boolean",
+      "description": "Draw a small sparkline of recent response speeds",
+      "default": true
+    }
+  }
 }
