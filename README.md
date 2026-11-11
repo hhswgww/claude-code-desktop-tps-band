@@ -26,6 +26,13 @@
 | `speedMode` | `generation` | `generation`：首个内容块 → 结束（纯吐字速度）；`end-to-end`：请求发出 → 结束（含 TTFT）；`both`：生成口径为主，细节里附带 e2e |
 | `retainSeconds` | `60` | 一轮结束后读数保留的秒数；`0` 表示保留到下一轮 |
 | `showSparkline` | `true` | 是否显示最近速度的迷你折线 |
+| `modelLabels` | 空 | 给模型 id 起显示名，逗号分隔的 `id=名字`；末尾带 `*` 表示前缀匹配 |
+
+代理环境下 API 返回的往往是内部别名（比如 `mythos-magpie-1855118842`），用 `modelLabels` 映射一下即可：
+
+```json
+"modelLabels": "mythos-magpie-1855118842=Opus 5.5,mythos-magpie-4931619015=Sonnet 5.5,deepseek-*=DeepSeek"
+```
 
 ## 它怎么算
 
@@ -41,7 +48,7 @@
 ## 安装
 
 ```bash
-git clone https://github.com/hhswgww/tps-band.git ~/.claude/local-plugins/tps-band
+git clone https://github.com/hhswgww/claude-code-desktop-tps-band.git ~/.claude/local-plugins/tps-band
 ```
 
 然后在 `~/.claude/settings.json` 的 `env` 里加：

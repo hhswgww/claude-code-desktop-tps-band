@@ -216,3 +216,35 @@ test('an interrupted response keeps a partial reading', { timeoutMs: 20_000 }, a
   expect(text).toContain('tok/s')
   await ui.unmount()
 })
+
+test('a proxy model id can be labelled', { options: { modelLabels: 'mythos-magpie-1855118842=Opus 5.5' }, timeoutMs: 20_000 }, async ($, on) => {
+  const clock = mock.clock(on, { now: 0 })
+  engine(on)
+
+  const usage = { ...USAGE, model: 'mythos-magpie-1855118842' }
+
+  on('turn.step', async function* () {
+    await clock.sleep(500)
+    yield { kind: 'text', index: 0, text: 'x'.repeat(30) }
+    await clock.sleep(1_000)
+    yield { kind: 'stop', stopReason: 'end_turn', usage }
+
+    return { ...RESULT, usage }
+  })
+
+  const stream = $.turn.step({ turnId: 't1', index: 0, model: 'mythos-magpie-1855118842', messageCount: 1 })
+  const pendingFirst = stream.next()
+  await clock.advance(500)
+  await pendingFirst
+  const pendingStop = stream.next()
+  await clock.advance(1_000)
+  await pendingStop
+  await stream.next()
+
+  const ui = await $.ui.mount({ plugin: 'tps-band', surface: 'desktop', ...BAND })
+  const text = (await ui.find({ type: 'Text', text: /tok\/s/ }))?.text ?? ''
+
+  expect(text).toContain('Opus 5.5')
+  expect(text).not.toContain('mythos')
+  await ui.unmount()
+})

@@ -86,6 +86,50 @@ function shortModel(model: string): string {
   return short.length > 24 ? `${short.slice(0, 23)}…` : short
 }
 
+type Label = readonly [key: string, label: string]
+
+/** `id=label` pairs, comma- or semicolon-separated; a key ending in `*` is a prefix. */
+function parseLabels(value: unknown): Label[] {
+  if (typeof value !== 'string') {
+    return []
+  }
+
+  const labels: Label[] = []
+
+  for (const part of value.split(/[,;]/)) {
+    const at = part.indexOf('=')
+    if (at <= 0) {
+      continue
+    }
+
+    const key = part.slice(0, at).trim()
+    const label = part.slice(at + 1).trim()
+
+    if (key !== '' && label !== '') {
+      labels.push([key, label])
+    }
+  }
+
+  return labels
+}
+
+/** A proxy's model id is often an alias; the labels name it, exact match first. */
+function labelFor(model: string, labels: readonly Label[]): string {
+  for (const [key, label] of labels) {
+    if (key === model) {
+      return label
+    }
+  }
+
+  for (const [key, label] of labels) {
+    if (key.endsWith('*') && model.startsWith(key.slice(0, -1))) {
+      return label
+    }
+  }
+
+  return shortModel(model)
+}
+
 function mean(values: readonly number[]): number {
   return values.reduce((a, b) => a + b, 0) / values.length
 }
@@ -118,6 +162,9 @@ export const register: Register = (on, options) => {
       : 60
 
   const showSparkline = options.showSparkline !== false
+
+  const labels = parseLabels(options.modelLabels)
+  const modelLabel = (model: string): string => labelFor(model, labels)
 
   const primary = (reading: Reading): number => (mode === 'end-to-end' ? reading.e2eTps : reading.tps)
   const windowMs = (reading: Reading): number => (mode === 'end-to-end' ? reading.e2eMs : reading.ms)
@@ -362,7 +409,7 @@ export const register: Register = (on, options) => {
       if (spark !== '') {
         details.push(spark)
       }
-      details.push(shortModel(reading.model))
+      details.push(modelLabel(reading.model))
     } else if (columns >= MEDIUM_COLUMNS) {
       if (isTurn) {
         details.push(`${turn.steps} steps`, `${formatTokens(turn.tokens)} tok`)
@@ -373,7 +420,7 @@ export const register: Register = (on, options) => {
       if (spark !== '' && !isTurn) {
         details.push(spark)
       }
-      details.push(shortModel(reading.model))
+      details.push(modelLabel(reading.model))
     } else if (isTurn) {
       details.push(`${turn.steps} steps`)
     } else {

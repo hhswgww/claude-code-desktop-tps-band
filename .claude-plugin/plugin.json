@@ -1,6 +1,6 @@
 {
   "name": "tps-band",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Output tokens per second for each model response, in the band above the prompt",
   "author": { "name": "hhswgww", "url": "https://github.com/hhswgww" },
   "license": "MIT",
@@ -24,6 +24,12 @@
       "type": "boolean",
       "description": "Draw a small sparkline of recent response speeds",
       "default": true
+    },
+    "modelLabels": {
+      "title": "Model labels",
+      "type": "string",
+      "description": "Comma-separated model id=label pairs; a trailing * matches a prefix. E.g. mythos-magpie-1855118842=Opus 5.5,deepseek-*=DeepSeek",
+      "default": ""
     }
   }
 }
