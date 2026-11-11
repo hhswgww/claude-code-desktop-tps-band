@@ -1,0 +1,8 @@
+{
+  "name": "tps-band",
+  "version": "0.1.0",
+  "description": "Output tokens per second for each model response, in the band above the prompt",
+  "author": { "name": "hhswgww", "url": "https://github.com/hhswgww" },
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}

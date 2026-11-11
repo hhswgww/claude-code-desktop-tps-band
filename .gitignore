@@ -1,0 +1,3 @@
+# Written by the engine into a loaded mod; not source.
+.claude-plugin/types/
+tsconfig.json
